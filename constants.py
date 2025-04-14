@@ -29,7 +29,7 @@ POKEMON_BONUS = {
 
 # Tamanho do mapa (42x42)
 TAMANHO_MAPA = 42
-TAMANHO_CELULA = 23
+TAMANHO_CELULA = 16
 
 # Radar da Pokédex
 ALCANCE_RADAR = 4
@@ -42,3 +42,16 @@ QUANTIDADE_POKEMONS = {
     "fogo": 6,
     "eletrico": 4,
 }
+
+from collections import OrderedDict
+
+INSIGNIAS_POSICOES = OrderedDict([
+    ((2, 4), "alma"),
+    ((2, 19), "trovao"),
+    ((4, 36), "vulcao"),
+    ((19, 14), "cascata"),
+    ((22, 2), "arcoiris"),
+    ((37, 19), "lama"),
+    ((20, 39), "terra"),
+    ((40, 32), "rocha"),
+])

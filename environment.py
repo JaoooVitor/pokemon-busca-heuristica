@@ -7,10 +7,8 @@ class Ambiente:
     def __init__(self):
         self.mapa = self.gerar_mapa()
         self.posicao_inicial = (19, 24)  # Laboratório do Professor Carvalho
-        self.ginasios = [
-            (2, 4), (2, 19), (4, 36), (19, 14),
-            (22, 2), (37, 19), (20, 39), (40, 32)
-        ]
+        from constants import INSIGNIAS_POSICOES
+        self.ginasios = list(INSIGNIAS_POSICOES.keys())
         self.pokemons_na_posicao = self.sortear_pokemons()
 
     def gerar_mapa(self):

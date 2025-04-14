@@ -1,10 +1,12 @@
 import pygame
 import ctypes
 import os
-from constants import TAMANHO_MAPA, TAMANHO_CELULA, ALCANCE_RADAR, CORES_TERRENO
+from constants import TAMANHO_MAPA, TAMANHO_CELULA, ALCANCE_RADAR, CORES_TERRENO, INSIGNIAS_POSICOES
 from environment import Ambiente
 from hud import desenhar_hud
 from tela_relatorio import mostrar_tela_final
+
+HUD_ALTURA = 50
 
 # === MENU INTERATIVO ===
 print("=== Escolha o agente ===")
@@ -24,16 +26,16 @@ else:
 
 # === INICIALIZAÇÃO ===
 pygame.init()
-tela = pygame.display.set_mode((TAMANHO_MAPA * TAMANHO_CELULA, TAMANHO_MAPA * TAMANHO_CELULA + 50))
+tela = pygame.display.set_mode((TAMANHO_MAPA * TAMANHO_CELULA, TAMANHO_MAPA * TAMANHO_CELULA + HUD_ALTURA))
 pygame.display.set_caption("Agente Pokémon - Busca Heurística com A*")
 
 # === FORÇA A JANELA PARA O FOCO ===
 try:
     hwnd = pygame.display.get_wm_info()['window']
-    ctypes.windll.user32.ShowWindow(hwnd, 5)  # SW_SHOW
+    ctypes.windll.user32.ShowWindow(hwnd, 5)
     ctypes.windll.user32.SetForegroundWindow(hwnd)
 except:
-    pass  # Em sistemas que não são Windows, ignora
+    pass
 
 # === SPRITES ===
 def carregar_sprites():
@@ -47,10 +49,10 @@ def carregar_sprites():
     }
 
     nomes_insignias = ["alma", "trovao", "vulcao", "cascata", "arcoiris", "lama", "terra", "rocha"]
-    sprite_insignias = [
-        pygame.transform.scale(pygame.image.load(f"assets/insignia_{nome}.png"), (TAMANHO_CELULA, TAMANHO_CELULA))
+    sprite_insignias = {
+        nome: pygame.transform.scale(pygame.image.load(f"assets/insignia_{nome}.png"), (TAMANHO_CELULA, TAMANHO_CELULA))
         for nome in nomes_insignias
-    ]
+    }
 
     return sprite_jogador, sprite_pokemon, sprite_insignias
 
@@ -82,32 +84,54 @@ while rodando:
     for passo in caminho:
         tela.fill((255, 255, 255))
 
+        # Desenha o mapa com offset
         for x in range(TAMANHO_MAPA):
             for y in range(TAMANHO_MAPA):
                 letra = ambiente.mapa[x][y]
                 cor = CORES_TERRENO.get(letra, (255, 255, 255))
-                pygame.draw.rect(tela, cor, (y * TAMANHO_CELULA, x * TAMANHO_CELULA, TAMANHO_CELULA, TAMANHO_CELULA))
+                pygame.draw.rect(tela, cor, (
+                    y * TAMANHO_CELULA,
+                    x * TAMANHO_CELULA + HUD_ALTURA,
+                    TAMANHO_CELULA,
+                    TAMANHO_CELULA
+                ))
 
+        # Caminho do agente
         for i in range(1, len(caminho)):
             p1 = caminho[i - 1]
             p2 = caminho[i]
             pygame.draw.line(
                 tela,
                 (200, 200, 200),
-                (p1[1] * TAMANHO_CELULA + TAMANHO_CELULA // 2, p1[0] * TAMANHO_CELULA + TAMANHO_CELULA // 2),
-                (p2[1] * TAMANHO_CELULA + TAMANHO_CELULA // 2, p2[0] * TAMANHO_CELULA + TAMANHO_CELULA // 2),
+                (p1[1] * TAMANHO_CELULA + TAMANHO_CELULA // 2, p1[0] * TAMANHO_CELULA + TAMANHO_CELULA // 2 + HUD_ALTURA),
+                (p2[1] * TAMANHO_CELULA + TAMANHO_CELULA // 2, p2[0] * TAMANHO_CELULA + TAMANHO_CELULA // 2 + HUD_ALTURA),
                 2
             )
 
+        # Pokémons visíveis
         for pos in pokemons_visiveis:
             tipo_poke = ambiente.pokemons_na_posicao.get(pos)
             if tipo_poke:
-                tela.blit(sprite_pokemon[tipo_poke], (pos[1] * TAMANHO_CELULA, pos[0] * TAMANHO_CELULA))
+                tela.blit(sprite_pokemon[tipo_poke], (
+                    pos[1] * TAMANHO_CELULA,
+                    pos[0] * TAMANHO_CELULA + HUD_ALTURA
+                ))
 
-        for i, pos in enumerate(ambiente.ginasios):
-            tela.blit(sprite_insignias[i], (pos[1] * TAMANHO_CELULA, pos[0] * TAMANHO_CELULA))
+        # Insígnias visíveis
+        for pos, nome in INSIGNIAS_POSICOES.items():
+            if pos not in agente.insignias_conquistadas:
+                tela.blit(sprite_insignias[nome], (
+                    pos[1] * TAMANHO_CELULA,
+                    pos[0] * TAMANHO_CELULA + HUD_ALTURA
+                ))
 
-        tela.blit(sprite_jogador, (passo[1] * TAMANHO_CELULA, passo[0] * TAMANHO_CELULA))
+        # Jogador
+        tela.blit(sprite_jogador, (
+            passo[1] * TAMANHO_CELULA,
+            passo[0] * TAMANHO_CELULA + HUD_ALTURA
+        ))
+
+        # HUD
         desenhar_hud(tela, agente, sprite_pokemon, sprite_insignias)
 
         pygame.display.flip()
@@ -117,7 +141,8 @@ while rodando:
         pokemons_visiveis.remove(alvo)
         agente.capturar_pokemon(alvo, ambiente)
     elif tipo == "ginasio":
-        agente.conquistar_insignia()
+        agente.conquistar_insignia(alvo)
+        ambiente.ginasios.remove(alvo)
 
 mostrar_tela_final(tela, agente, sprite_pokemon, sprite_insignias)
 pygame.quit()
