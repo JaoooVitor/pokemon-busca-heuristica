@@ -1,5 +1,3 @@
-# environment.py
-
 import random
 from constants import CUSTO_TERRENO, POKEMON_BONUS, QUANTIDADE_POKEMONS, TAMANHO_MAPA
 
@@ -87,3 +85,14 @@ class Ambiente:
             p for p in self.pokemons_na_posicao
             if abs(p[0] - x) <= alcance and abs(p[1] - y) <= alcance
         ]
+
+    def nome_terreno(self, pos):
+        """Retorna o nome do sprite correspondente ao tipo de terreno."""
+        letra = self.get_terreno(pos)
+        return {
+            "G": "grama",
+            "A": "agua",
+            "M": "montanha",
+            "C": "caverna",
+            "V": "vulcao"
+        }.get(letra, "desconhecido")

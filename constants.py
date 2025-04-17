@@ -1,14 +1,3 @@
-# constants.py
-
-# Cores dos terrenos
-CORES_TERRENO = {
-    "G": (0, 255, 0),       # Grama
-    "A": (0, 0, 255),       # Água
-    "M": (139, 69, 19),     # Montanha
-    "C": (128, 128, 128),   # Caverna
-    "V": (255, 140, 0),     # Vulcão
-}
-
 # Custos base dos terrenos
 CUSTO_TERRENO = {
     "G": 10,
@@ -29,7 +18,7 @@ POKEMON_BONUS = {
 
 # Tamanho do mapa (42x42)
 TAMANHO_MAPA = 42
-TAMANHO_CELULA = 16
+TAMANHO_CELULA = 15
 
 # Radar da Pokédex
 ALCANCE_RADAR = 4
@@ -42,6 +31,9 @@ QUANTIDADE_POKEMONS = {
     "fogo": 6,
     "eletrico": 4,
 }
+
+# Tipos de terrenos (para carregar sprites)
+TIPOS_TERRENO = ["G", "A", "M", "C", "V"]
 
 from collections import OrderedDict
 

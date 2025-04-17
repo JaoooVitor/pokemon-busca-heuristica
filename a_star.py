@@ -11,13 +11,13 @@ def a_estrela(mapa, inicio, objetivo, pokemons_capturados):
     """Busca o melhor caminho de inicio até objetivo."""
     fila = []
     heapq.heappush(fila, (0, inicio))
-    veio_de = {}
-    custo_atual = {inicio: 0}
+    veio_de = {}    # Guarda de onde o agente veio para reconstruir o caminho no final.
+    custo_atual = {inicio: 0}   # Armazena o custo para chegar em cada célula
 
-    while fila:
-        _, atual = heapq.heappop(fila)
+    while fila: #Loop Principal
+        _, atual = heapq.heappop(fila) #enquanto tiver nós ele remove o de menor custo estimado
 
-        if atual == objetivo:
+        if atual == objetivo:  
             caminho = []
             total_custo = 0
 
@@ -42,7 +42,7 @@ def a_estrela(mapa, inicio, objetivo, pokemons_capturados):
         x, y = atual
         for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             vizinho = (x + dx, y + dy)
-            if 0 <= vizinho[0] < len(mapa) and 0 <= vizinho[1] < len(mapa[0]):
+            if 0 <= vizinho[0] < len(mapa) and 0 <= vizinho[1] < len(mapa[0]): #garante q esta dentro do mapa
                 terreno = mapa[vizinho[0]][vizinho[1]]
                 custo = CUSTO_TERRENO[terreno]
 
@@ -59,4 +59,4 @@ def a_estrela(mapa, inicio, objetivo, pokemons_capturados):
                     heapq.heappush(fila, (prioridade, vizinho))
                     veio_de[vizinho] = atual
 
-    return [], float('inf')  # Se não encontrar caminho
+    return [], float('inf')  
